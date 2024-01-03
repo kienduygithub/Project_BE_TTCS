@@ -37,6 +37,7 @@ const createOrderItem = (newOrderItem) => {
         }
     })
 }
+// GET QUARTER RECORDS
 const getQuarter = (year) => {
     return new Promise(async (resolve, reject) => {
         try {
@@ -84,7 +85,45 @@ const getQuarter = (year) => {
         }
     })
 }
+// GET ALL RECORDS BY SELECTED QUARTER
+const getBySelectedQuarter = (quarter, year) => {
+    return new Promise(async (resolve, reject) => {
+        try {
+            const quarters = [
+                { start: new Date(year, 0, 1), end: new Date(year, 2, 31) },
+                { start: new Date(year, 3, 1), end: new Date(year, 5, 30) },
+                { start: new Date(year, 6, 1), end: new Date(year, 8, 30) },
+                { start: new Date(year, 9, 1), end: new Date(year, 11, 31) },
+            ];
+            const data = await db.OrderItem.findAll({
+                where: {
+                    createdAt: { [Op.between]: [quarters[quarter - 1].start, quarters[quarter - 1].end] }
+                },
+                attributes: ['productId', 'amount', 'price', 'discount'],
+                raw: true
+            })
+            const requiredData = await Promise.all(
+                data.map(async (item) => {
+                    const productData = await db.Product.findOne({
+                        where: { id: item.productId },
+                        attributes: ['type'],
+                        raw: true
+                    })
+                    return { ...item, type: productData.type }
+                })
+            )
+            resolve({
+                status: 'OK',
+                message: 'GET DATA BY SELECTED QUARTER SUCCESS',
+                data: requiredData
+            })
+        } catch (error) {
+            reject(error)
+        }
+    })
+}
 module.exports = {
     createOrderItem,
-    getQuarter
+    getQuarter,
+    getBySelectedQuarter
 }

@@ -58,6 +58,7 @@ const initWebRoutes = (app) => {
   router.delete('/order/delete-order/:id', orderController.deleteOrderAdmin)
   router.get('/order/get-order-latest', orderController.getAllOrderLatest)
   router.get('/order-item/get-quarter', orderItemController.getQuarter)
+  router.get('/order-item/get-by-selected-quarter', orderItemController.getBySelectedQuarter)
   // PAYMENT PAYPAL
   router.get('/payment/config', (req, res) => {
     return res.status(200).json({

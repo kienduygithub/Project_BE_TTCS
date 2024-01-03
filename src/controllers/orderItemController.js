@@ -30,8 +30,27 @@ const getQuarter = async (req, res) => {
         })
     }
 }
-
+const getBySelectedQuarter = async (req, res) => {
+    try {
+        const { quarter, year } = req.query;
+        if (!quarter || !year) {
+            return res.status(404).json({
+                status: 'ERR',
+                message: 'The parameters is required'
+            })
+        }
+        const response = await orderItemServices.getBySelectedQuarter(quarter, year);
+        return res.status(200).json(
+            response
+        )
+    } catch (error) {
+        return res.status(404).json({
+            message: error
+        })
+    }
+}
 module.exports = {
     createOrderItem,
-    getQuarter
+    getQuarter,
+    getBySelectedQuarter
 }
