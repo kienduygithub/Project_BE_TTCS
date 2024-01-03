@@ -49,11 +49,11 @@ const loginUser = async (req, res) => {
         }
         const response = await userService.loginUser(req.body);
         const { refresh_token, ...newResponse } = response;
-        // res.cookie('refresh_token', refreshToken, {
-        //     httpOnly: true,
-        //     secure: false,
-        //     samesite: 'strict'
-        // })
+        res.cookie('refresh_token', refresh_token, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "strict"
+        })
         return res.status(200).json(
             response
         )
@@ -160,7 +160,7 @@ const refreshToken = async (req, res) => {
 // LOGOUT
 const logoutUser = (req, res) => {
     try {
-        // res.clearCookie('refresh_token');
+        res.clearCookie('refresh_token').send();
         return res.status(200).json({
             status: 'OK',
             message: 'LOG OUT SUCCESS'

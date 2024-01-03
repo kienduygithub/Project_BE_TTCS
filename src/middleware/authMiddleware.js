@@ -17,7 +17,7 @@ const authMiddleware = (req, res, next) => {
         } else {
             return res.status(404).json({
                 status: 'ERR',
-                message: 'The authentication user'
+                message: 'The authentication admin'
             })
         }
     })

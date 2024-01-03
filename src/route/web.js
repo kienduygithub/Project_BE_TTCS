@@ -1,5 +1,4 @@
 import express from 'express'
-// import homeController from '../controllers/homeController'
 import userController from '../controllers/userController'
 import productController from '../controllers/productController'
 import orderItemController from '../controllers/orderItemController'
@@ -54,7 +53,7 @@ const initWebRoutes = (app) => {
   router.get('/order/get-order-details/:id', orderController.getOrderDetails)
   router.delete('/order/cancel-order/:id', orderController.cancelOrderDetails)
   router.get('/order/get-all-order', authMiddleware, orderController.getAllOrder)
-  router.get('/order/get-all-order/:id', authUserMiddleware, orderController.getAllOrderDetails)
+  router.get('/order/get-all-order/:id', orderController.getAllOrderDetails)
   router.post('/order/update-order/:id', orderController.updateOrder)
   router.delete('/order/delete-order/:id', orderController.deleteOrderAdmin)
   router.get('/order/get-order-latest', orderController.getAllOrderLatest)

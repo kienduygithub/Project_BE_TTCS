@@ -245,8 +245,8 @@ const getAllOrderDetails = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
             const order = await db.Order.findAll({
-                sort: [
-                    ['createdAt', 'ASC']
+                order: [
+                    ['createdAt', 'DESC']
                 ],
                 where: { userId: id }
             })
