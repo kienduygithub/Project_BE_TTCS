@@ -69,5 +69,5 @@ const initWebRoutes = (app) => {
   return app.use('/api', router)
 
 }
-
+// Hoàn thành
 module.exports = initWebRoutes
