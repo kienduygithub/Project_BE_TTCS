@@ -12,19 +12,19 @@ import { authMiddleware, authUserMiddleware } from '../middleware/authMiddleware
 let router = express.Router()
 const initWebRoutes = (app) => {
   // NGƯỜI DÙNG
-  router.get('/getProductOrderItem/:id', async (req, res) => {
-    const id = req.params.id;
-    const data = await db.OrderItem.findAll({
-      include: [{
-        model: db.Product,
-        as: 'Product'
-      }],
-      where: { id: id }
-    })
-    return res.status(200).json({
-      data: data
-    })
-  })
+  // router.get('/getProductOrderItem/:id', async (req, res) => {
+  //   const id = req.params.id;
+  //   const data = await db.OrderItem.findAll({
+  //     include: [{
+  //       model: db.Product,
+  //       as: 'Product'
+  //     }],
+  //     where: { id: id }
+  //   })
+  //   return res.status(200).json({
+  //     data: data
+  //   })
+  // })
   router.post('/sign-up', userController.createUser)
   router.post('/sign-in', userController.loginUser)
   router.post('/log-out', userController.logoutUser)

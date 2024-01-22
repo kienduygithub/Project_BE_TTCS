@@ -10,7 +10,7 @@ const createUser = async (req, res) => {
     if (!email || !password || !confirmPassword) {
         return res.status(200).json({
             status: 'ERR',
-            message: 'The innput is required'
+            message: 'The inputs is required'
         })
     } else if (!isCheckEmail) {
         return res.status(200).json({
@@ -160,7 +160,8 @@ const refreshToken = async (req, res) => {
 // LOGOUT
 const logoutUser = (req, res) => {
     try {
-        res.clearCookie('refresh_token').send();
+        // console.log('refresh_token', res)
+        res.clearCookie('refresh_token');
         return res.status(200).json({
             status: 'OK',
             message: 'LOG OUT SUCCESS'

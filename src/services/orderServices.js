@@ -4,9 +4,10 @@ import emailServices from '../services/emailServices'
 
 const today = new Date();
 const startOfWeek = new Date(today.getFullYear(), today.getMonth(), today.getDate() - today.getDay() + 1);
-startOfWeek.setHours(0, 0, 0, 0);
+startOfWeek.setHours(7, 0, 0, 0);
 const endOfWeek = new Date(startOfWeek);
 endOfWeek.setDate(endOfWeek.getDate() + 6);
+endOfWeek.setHours(30, 59, 59, 999);
 
 // CREATE
 const createOrder = (newOrder) => {
@@ -220,7 +221,6 @@ const getAllOrderLatest = () => {
                             endOfWeek
                     }
                 },
-                // attributes: ['createdAt'],
                 raw: true
             })
             if (!orders) {

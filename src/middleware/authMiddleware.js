@@ -1,7 +1,6 @@
 import jwt from 'jsonwebtoken'
 require('dotenv').config()
 const authMiddleware = (req, res, next) => {
-    // console.log('>>> Check token: ', req.headers)
     const token = req.headers.token.split(' ')[1]
     jwt.verify(token, process.env.ACCESS_TOKEN, (err, user) => {
         if (err) {
@@ -22,6 +21,7 @@ const authMiddleware = (req, res, next) => {
         }
     })
 }
+
 const authUserMiddleware = (req, res, next) => {
     const token = req.headers.token.split(' ')[1];
     const userId = req.params.id;
@@ -45,7 +45,6 @@ const authUserMiddleware = (req, res, next) => {
         }
     })
 }
-
 
 module.exports = {
     authMiddleware,
