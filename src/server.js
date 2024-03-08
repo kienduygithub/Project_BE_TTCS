@@ -11,7 +11,7 @@ let app = express();
 let port = process.env.PORT || 8080;
 app.use(cors(
     {
-        origin: 'http://localhost:3000',
+        origin: process.env.URL_CLIENT,
         credentials: true
     }
 ))
@@ -20,12 +20,12 @@ app.use(express.urlencoded({ limit: '50mb', extended: true, parameterLimit: 5000
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(cookieParser())
-// config view engine
+// CONFIG
 viewEngine(app);
 initWebRoutes(app)
 
 connectDB();
 
 app.listen(port, () => {
-    console.log(`>>> BE NodeJS is running on http://localhost:${port}`);
+    console.log(`>>> BE NodeJS is running on http://localhost:${ port }`);
 })

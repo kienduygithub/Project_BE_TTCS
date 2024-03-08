@@ -11,9 +11,9 @@ module.exports = (sequelize, DataTypes) => {
          */
         static associate(models) {
             Product.hasOne(models.OrderItem);
-            // Product.belongsTo(models.Category, {
-            //     foreignKey: 'type'
-            // });
+            Product.belongsTo(models.Category, {
+                foreignKey: 'type', as: 'typeData', targetKey: 'type'
+            })
         }
     };
     Product.init({

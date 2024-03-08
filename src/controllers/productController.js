@@ -99,7 +99,6 @@ const getLatestProduct = async (req, res) => {
     try {
         let { limit, sort } = req.query;
         limit = Number(limit);
-        console.log('sort', sort)
         const response = await productServices.getLatestProduct(limit || 10, sort);
         return res.status(200).json(
             response

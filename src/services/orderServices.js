@@ -25,7 +25,7 @@ const createOrder = (newOrder) => {
                 async (order) => {
                     const { productId, amount } = order;
                     const productData = await db.Product.findOne({
-                        where: { id: productId, countInStock: { [Op.gte]: amount } }
+                        where: { id: productId, countInStock: { [ Op.gte ]: amount } }
                     })
                     if (productData) {
                         productData.countInStock -= amount;
@@ -44,6 +44,7 @@ const createOrder = (newOrder) => {
                     }
                 }
             );
+
             const results = await Promise.all(promises);
             const newData = results && results.filter((item) => item.id);
             if (newData.length) {
@@ -53,7 +54,7 @@ const createOrder = (newOrder) => {
                 })
                 resolve({
                     status: 'ERR',
-                    message: ` Sản phẩm với id: ${arrId.join(',')} không đủ hàng`
+                    message: ` Sản phẩm với id: ${ arrId.join(',') } không đủ hàng`
                 })
             } else {
                 let shippingAddress = {
@@ -119,10 +120,10 @@ const getOrderDetails = (id) => {
                 })
             }
             let items = await db.OrderItem.findAll({
-                include: [{
+                include: [ {
                     model: db.Order,
                     as: 'order'
-                }],
+                } ],
                 where: { orderId: order.id },
                 raw: true
             });
@@ -144,7 +145,7 @@ const cancelOrderDetails = (id, data) => {
             let order = [];
             const promises = data.map(async (order) => {
                 const productData = await db.Product.findOne({
-                    where: { id: order.productId, selled: { [Op.gte]: order.amount } },
+                    where: { id: order.productId, selled: { [ Op.gte ]: order.amount } },
                 })
                 if (productData) {
                     productData.countInStock += order.amount;
@@ -159,11 +160,11 @@ const cancelOrderDetails = (id, data) => {
                 }
             })
             const results = await Promise.all(promises);
-            const newData = results && results[0] && results[0].id;
+            const newData = results && results[ 0 ] && results[ 0 ].id;
             if (newData) {
                 resolve({
                     status: 'ERR',
-                    message: `Sản phẩm với id: ${newData} không tồn tại`
+                    message: `Sản phẩm với id: ${ newData } không tồn tại`
                 })
             }
             order = await db.Order.findOne({
@@ -195,7 +196,7 @@ const getAllOrder = () => {
         try {
             const allOrder = await db.Order.findAll({
                 order: [
-                    ['createdAt', 'ASC']
+                    [ 'createdAt', 'ASC' ]
                 ]
             })
             resolve({
@@ -215,9 +216,9 @@ const getAllOrderLatest = () => {
             const orders = await db.Order.findAndCountAll({
                 where: {
                     createdAt: {
-                        [Op.gte]:
+                        [ Op.gte ]:
                             startOfWeek,
-                        [Op.lte]:
+                        [ Op.lte ]:
                             endOfWeek
                     }
                 },
@@ -246,9 +247,19 @@ const getAllOrderDetails = (id) => {
         try {
             const order = await db.Order.findAll({
                 order: [
-                    ['createdAt', 'DESC']
+                    [ 'createdAt', 'DESC' ]
                 ],
-                where: { userId: id }
+                where: { userId: id },
+                attributes: {
+                    exclude: [ 'orderItems', 'createdAt', 'updatedAt' ]
+                },
+                include: {
+                    model: db.OrderItem,
+                    attributes: {
+                        exclude: [ 'createdAt', 'updatedAt' ]
+                    }
+                },
+                nest: true
             })
             if (order === null) {
                 resolve({
@@ -298,7 +309,7 @@ const deleteOrderAdmin = (orderId) => {
             if (!order) {
                 resolve({
                     status: 'ERR',
-                    message: `The order with id=${orderId} is not defined`
+                    message: `The order with id=${ orderId } is not defined`
                 })
             }
             await order.destroy();

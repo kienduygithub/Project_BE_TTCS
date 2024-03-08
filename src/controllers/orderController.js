@@ -1,7 +1,7 @@
 import orderServices from '../services/orderServices'
 const createOrder = async (req, res) => {
     try {
-        const { paymentMethod, itemsPrice, shippingMethod, shippingPrice, totalPrice, fullName, address, city, phone } = req.body;
+        const {paymentMethod, itemsPrice, shippingMethod, shippingPrice, totalPrice, fullName, address, city, phone} = req.body;
         if (!paymentMethod || !shippingMethod || !itemsPrice || !totalPrice || !fullName || !address || !city || !phone) {
             return res.status(200).json({
                 status: 'ERR',
@@ -21,7 +21,7 @@ const createOrder = async (req, res) => {
 // READ DETAILS
 const getOrderDetails = async (req, res) => {
     try {
-        const { id } = req.params;
+        const {id} = req.params;
         if (!id) {
             return res.status(200).json({
                 status: 'ERR',
@@ -40,8 +40,7 @@ const getOrderDetails = async (req, res) => {
 }
 const cancelOrderDetails = async (req, res) => {
     try {
-        const { orderId, orderItems } = req.body;
-        // Data client gửi lên là Array
+        const {orderId, orderItems} = req.body;
         if (!orderId) {
             return res.status(200).json({
                 status: 'ERR',
@@ -53,6 +52,7 @@ const cancelOrderDetails = async (req, res) => {
             response
         )
     } catch (error) {
+        console.log(error);
         return res.status(404).json({
             message: error
         })
@@ -106,8 +106,8 @@ const getAllOrderDetails = async (req, res) => {
 const updateOrder = async (req, res) => {
     try {
         let orderId = req.params.id;
-        let { isPaid, isDelivered } = req.body;
-        const response = await orderServices.updateOrder(orderId, { isPaid, isDelivered });
+        let {isPaid, isDelivered} = req.body;
+        const response = await orderServices.updateOrder(orderId, {isPaid, isDelivered});
         return res.status(200).json(
             response
         )

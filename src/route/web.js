@@ -27,7 +27,7 @@ const initWebRoutes = (app) => {
   // })
   router.post('/sign-up', userController.createUser)
   router.post('/sign-in', userController.loginUser)
-  router.post('/log-out', userController.logoutUser)
+  router.get('/log-out', userController.logoutUser)
   router.post('/user/update-user/:id', authUserMiddleware, userController.updateUser)
   router.delete('/user/delete-user/:id', authMiddleware, userController.deleteUser)
   router.get('/user/getAll', userController.getAllUser)
@@ -65,6 +65,28 @@ const initWebRoutes = (app) => {
       status: 'OK',
       data: process.env.CLIENT_ID
     })
+  })
+  router.get('/get-products-category', async (req, res) => {
+    try {
+      const data = await db.Product.findAll({
+        where: { type: 'iPhone' },
+        include: [
+          { model: db.Category, as: 'typeData' }
+        ],
+        attributes: {
+          exclude: [ 'image' ]
+        },
+        nest: true,
+        raw: true
+      });
+      return res.status(200).json({
+        data: data
+      })
+    } catch (error) {
+      return res.status(404).json({
+        message: error
+      })
+    }
   })
   return app.use('/api', router)
 

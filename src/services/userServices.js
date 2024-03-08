@@ -1,17 +1,17 @@
 import db from "../models"
-import bcrypt, { genSaltSync, hashSync } from 'bcryptjs'
-import { generalAccessToken, generalRefreshToken } from "./jwtService"
-import { sendEmailResetPassword } from './emailServices'
+import bcrypt, {genSaltSync, hashSync} from 'bcryptjs'
+import {generalAccessToken, generalRefreshToken} from "./jwtService"
+import {sendEmailResetPassword} from './emailServices'
 const salt = bcrypt.genSaltSync(10)
 import crypto from 'crypto'
-import { Op } from "sequelize"
+import {Op} from "sequelize"
 // CREATE
 const createUser = (newUser) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const { email, password, confirmPassword } = newUser
+            const {email, password, confirmPassword} = newUser
             let checkUser = await db.User.findOne({
-                where: { email: email },
+                where: {email: email},
                 raw: true
             })
             if (checkUser !== null) {
@@ -52,9 +52,9 @@ const hashPassword = (password) => {
 const loginUser = (userCheck) => {
     return new Promise(async (resolve, reject) => {
         try {
-            const { email, password } = userCheck;
+            const {email, password} = userCheck;
             let user = await db.User.findOne({
-                where: { email: email },
+                where: {email: email},
                 raw: true,
                 logger: false
             })
@@ -63,7 +63,8 @@ const loginUser = (userCheck) => {
                 if (!comparePassword) {
                     resolve({
                         status: 'ERR',
-                        message: 'Password or user is incorrect'
+                        message: 'Wrong password!',
+                        err_fields: 'password'
                     })
                 } else {
                     const access_token = await generalAccessToken({
@@ -85,7 +86,8 @@ const loginUser = (userCheck) => {
             } else {
                 resolve({
                     status: 'ERR',
-                    message: 'The user is not difined'
+                    message: 'The email is not exist!!',
+                    err_fields: 'email'
                 })
             }
         } catch (error) {
@@ -98,7 +100,7 @@ const updateUser = (id, data) => {
     return new Promise(async (resolve, reject) => {
         try {
             let user = await db.User.findOne({
-                where: { id: id },
+                where: {id: id},
             })
             let response = {}
             if (user) {
@@ -145,7 +147,7 @@ const deleteUser = (id) => {
     return new Promise(async (resolve, reject) => {
         try {
             let user = await db.User.findOne({
-                where: { id: id }
+                where: {id: id}
             })
             let response = {}
             if (!user) {
@@ -200,7 +202,7 @@ const getDetailUser = (id) => {
         try {
             let user = await db.User.findOne({
                 raw: true,
-                where: { id: id },
+                where: {id: id},
 
             })
             if (!user) {
@@ -226,7 +228,7 @@ const deleteMany = (ids) => {
     return new Promise(async (resolve, reject) => {
         try {
             await db.User.destroy({
-                where: { id: ids }
+                where: {id: ids}
             })
             let userList = await db.User.findAll({
                 raw: true
@@ -246,7 +248,7 @@ const changePassword = (id, data) => {
     return new Promise(async (resolve, reject) => {
         try {
             let user = await db.User.findOne({
-                where: { id: id }
+                where: {id: id}
             })
             if (!user) {
                 resolve({
@@ -255,7 +257,7 @@ const changePassword = (id, data) => {
                 })
             }
             let curPasswordHashed = user.password
-            let { password, newPassword } = data;
+            let {password, newPassword} = data;
             let isPasswordCorrect = await bcrypt.compareSync(password, curPasswordHashed);
             if (!isPasswordCorrect) {
                 resolve({
@@ -267,7 +269,7 @@ const changePassword = (id, data) => {
                 user.password = newPasswordHashed;
                 await user.save();
                 let dataUser = await db.User.findOne({
-                    where: { password: newPasswordHashed }
+                    where: {password: newPasswordHashed}
                 })
                 resolve({
                     status: 'OK',
@@ -285,7 +287,7 @@ const forgotPassword = (email) => {
     return new Promise(async (resolve, reject) => {
         try {
             let user = await db.User.findOne({
-                where: { email: email }
+                where: {email: email}
             })
             if (!user) {
                 resolve({
@@ -293,17 +295,17 @@ const forgotPassword = (email) => {
                     message: 'The user is not defined'
                 })
             }
-            const { resetToken, passwordResetToken, passwordResetExpires } = await createPasswordChangedToken();
+            const {resetToken, passwordResetToken, passwordResetExpires} = await createPasswordChangedToken();
             user.passwordResetToken = passwordResetToken;
             user.passwordResetExpires = passwordResetExpires;
             await user.save();
             // const html = `Xin quý khách vui lòng nhấn vào đường link dưới đây để thay đổi mật khẩu của bạn.Link này sẽ hết hạn sau 5p <a href=${process.env.URL_CLIENT}/reset-password/${resetToken}>Nhấn vào đây</a>`
             const html = `Xin quý khách vui lòng ghi nhớ OTP dưới đây. Mã OTP sẽ hết hạn trong vòng 5 phút kể từ lúc nhận: <div><b>${passwordResetToken}</b></div>`
-            sendEmailResetPassword({ email, html });
+            sendEmailResetPassword({email, html});
             resolve({
                 status: 'OK',
                 message: 'FORGOT PASSWORD',
-                data: { resetToken, passwordResetToken, passwordResetExpires },
+                data: {resetToken, passwordResetToken, passwordResetExpires},
             })
         } catch (error) {
             reject(error)

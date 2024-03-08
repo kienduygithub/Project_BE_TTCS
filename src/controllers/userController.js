@@ -1,6 +1,7 @@
 import userService from '../services/userServices'
 import jwtService from '../services/jwtService'
-
+import jwt from 'jsonwebtoken';
+require('dotenv').config();
 // SIGN UP
 const createUser = async (req, res) => {
     const { email, password, confirmPassword } = req.body;
@@ -39,7 +40,7 @@ const loginUser = async (req, res) => {
         if (!email || !password) {
             return res.status(200).json({
                 status: 'ERR',
-                message: `The input is required ${email}`
+                message: `The input is required ${ email }`
             })
         } else if (!isCheckEmail) {
             return res.status(200).json({
@@ -51,8 +52,9 @@ const loginUser = async (req, res) => {
         const { refresh_token, ...newResponse } = response;
         res.cookie('refresh_token', refresh_token, {
             httpOnly: true,
-            secure: true,
-            sameSite: "strict"
+            secure: false,
+            sameSite: "strict",
+            maxAge: 24 * 60 * 60 * 1000
         })
         return res.status(200).json(
             response
@@ -140,17 +142,31 @@ const getDetailUser = async (req, res) => {
 // REFRESH TOKEN
 const refreshToken = async (req, res) => {
     try {
-        const token = req.headers.token.split(' ')[1];
-        if (!token) {
-            return res.status(200).json({
+        const refresh_token = req.cookies.refresh_token;
+        if (!refresh_token) {
+            return res.status(403).json({
                 status: 'ERR',
-                message: 'The token is not exist!!!'
+                message: 'Unauthorization token!'
             })
         }
-        const response = await jwtService.refreshTokenJWT(token)
-        return res.status(200).json(
-            response
-        )
+        jwt.verify(refresh_token, process.env.REFRESH_TOKEN, (err, user) => {
+            if (err) {
+                return res.status(401).json({
+                    status: 'ERR',
+                    message: 'The token expired!'
+                })
+            }
+            const payload = {
+                id: user.id,
+                isAdmin: user.isAdmin
+            }
+            const access_token = jwtService.generalAccessToken(payload);
+            return res.status(200).json({
+                status: 'OK',
+                message: 'REFRESH TOKEN',
+                access_token: access_token
+            })
+        })
     } catch (error) {
         return res.status(404).json({
             message: error

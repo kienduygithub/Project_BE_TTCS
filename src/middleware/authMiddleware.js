@@ -1,46 +1,44 @@
 import jwt from 'jsonwebtoken'
 require('dotenv').config()
 const authMiddleware = (req, res, next) => {
-    const token = req.headers.token.split(' ')[1]
+    // const token = req.headers.token.split(' ')[1];
+    const token = req.headers.authorization.split(' ')[ 1 ];
     jwt.verify(token, process.env.ACCESS_TOKEN, (err, user) => {
         if (err) {
-            return res.status(404).json({
+            return res.status(401).json({
                 status: 'ERR',
-                message: 'The authentication error',
+                message: 'Invalid token admin!',
             })
         }
-        // const { payload } = user;
         const payload = user;
         if (payload?.isAdmin) {
             next();
         } else {
-            return res.status(404).json({
+            return res.status(403).json({
                 status: 'ERR',
-                message: 'The authentication admin'
+                message: 'No authorization!'
             })
         }
     })
 }
 
 const authUserMiddleware = (req, res, next) => {
-    const token = req.headers.token.split(' ')[1];
-    const userId = req.params.id;
+    const token = req.headers.authorization.split(' ')[ 1 ];
     jwt.verify(token, process.env.ACCESS_TOKEN, (err, user) => {
         if (err) {
-            return res.status(404).json({
+            return res.status(401).json({
                 status: 'ERR',
-                message: 'The authentication error',
+                message: 'Invalid token user!',
             })
         }
         // const { payload } = user;
         const payload = user;
-        if (payload?.isAdmin || payload.id == userId) {
-            console.log('true')
+        if (payload.id) {
             next();
         } else {
-            return res.status(404).json({
+            return res.status(403).json({
                 status: 'ERR',
-                message: 'The authentication user'
+                message: 'No authorization!'
             })
         }
     })
